@@ -1,0 +1,171 @@
+---
+import { ClientRouter } from 'astro:transitions';
+import '@fontsource-variable/playfair-display/wght.css';
+import '@fontsource-variable/inter/wght.css';
+import '../styles/global.css';
+
+import Loader from '../components/Loader.astro';
+import Navbar from '../components/Navbar.astro';
+import Scene from '../components/Scene.astro';
+import Flight from '../components/Flight.astro';
+import { localizedPath, t, type Locale } from '../i18n/ui';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const strings = t(locale);
+
+const path = Astro.url.pathname;
+const home = localizedPath('/', locale);
+const alternates: { locale: Locale; hreflang: string }[] = [
+  { locale: 'es', hreflang: 'es' },
+  { locale: 'en', hreflang: 'en' },
+];
+---
+
+<!doctype html>
+<html lang={strings.htmlLang}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>{strings.documentTitle}</title>
+    <meta name="description" content={strings.documentDescription} />
+    <meta name="theme-color" content="#06090d" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="canonical" href={new URL(path, Astro.site)} />
+    {
+      alternates.map((alt) => (
+        <link
+          rel="alternate"
+          hreflang={alt.hreflang}
+          href={new URL(localizedPath(path, alt.locale), Astro.site)}
+        />
+      ))
+    }
+    <link rel="alternate" hreflang="x-default" href={new URL(localizedPath(path, 'es'), Astro.site)} />
+
+    {/* Sin JS no hay bienvenida que pueda terminar, así que la escena se
+        entrega ya montada. Va en <noscript> y no como clase en <html>: con JS
+        activo estas reglas no llegan a existir y el fondo no parpadea. */}
+    <noscript>
+      <style>
+        .loader {
+          display: none;
+        }
+        [data-reveal] {
+          opacity: 1;
+          transform: none;
+        }
+        .scene__master,
+        .scene__stars,
+        .scene__arc {
+          opacity: 1;
+          transform: none;
+        }
+      </style>
+    </noscript>
+
+    <script is:inline>
+      /**
+       * Solo la raíz decide idioma. La elección manual guardada manda sobre el
+       * idioma del navegador; /en/ nunca redirige, así que el conmutador no
+       * puede quedar atrapado en un bucle.
+       */
+      (() => {
+        if (location.pathname !== '/') return;
+
+        let stored = null;
+        try {
+          stored = localStorage.getItem('av:lang');
+        } catch {
+          /* almacenamiento bloqueado: se usa el idioma del navegador */
+        }
+
+        const want =
+          stored === 'es' || stored === 'en'
+            ? stored
+            : (navigator.language || 'es').toLowerCase().startsWith('es')
+              ? 'es'
+              : 'en';
+
+        if (want === 'en') location.replace('/en/');
+      })();
+    </script>
+
+    <ClientRouter />
+  </head>
+
+  <body>
+    <a class="skip-link" href="#contenido">{strings.skipToContent}</a>
+
+    {/* La escena y la bienvenida sobreviven al cambio de idioma: solo cambia
+        el contenido traducible. Así el fondo ya descargado no se pierde y la
+        bienvenida, una vez terminada, no reaparece. */}
+    <Scene strings={strings} />
+
+    <div data-page>
+      <Navbar locale={locale} strings={strings} path={path} home={home} />
+      <slot />
+      <Flight />
+    </div>
+
+    <Loader strings={strings} />
+
+    <script>
+      /**
+       * Cambiar idioma conserva la posición de scroll. El router de vistas
+       * navega sin recarga; aquí solo se recuerda la elección y se restaura el
+       * desplazamiento para que el cambio no devuelva a nadie al principio.
+       *
+       * Son registros de documento, que sobreviven a los cambios de vista: se
+       * hacen una sola vez por carga real.
+       */
+      if (!(window as any).__avLangBound) {
+        (window as any).__avLangBound = true;
+
+        let carried: number | null = null;
+
+        // La elección manual se guarda antes de navegar, así que la raíz ya la
+        // ve en la siguiente carga completa.
+        document.addEventListener('click', (event) => {
+          const target = event.target as HTMLElement | null;
+          const link = target?.closest?.(
+            '[data-lang-link]'
+          ) as HTMLAnchorElement | null;
+          if (!link) return;
+          try {
+            localStorage.setItem('av:lang', link.hreflang === 'en' ? 'en' : 'es');
+          } catch {
+            /* sin persistencia: la elección dura lo que dure la navegación */
+          }
+        });
+
+        document.addEventListener('astro:before-preparation', (event) => {
+          const origin = (event as any).sourceElement as HTMLElement | undefined;
+          carried = origin?.closest('[data-lang-link]') ? window.scrollY : null;
+        });
+
+        document.addEventListener('astro:after-swap', () => {
+          const root = document.documentElement;
+
+          // Ya se ha entrado una vez: el contenido nuevo aparece con el fundido
+          // corto, sin repetir los retardos del revelado inicial.
+          root.classList.add('is-instant');
+
+          // La escena persiste, así que su texto alternativo hay que traducirlo
+          // a mano al cambiar de idioma.
+          const master = document.querySelector<HTMLImageElement>('[data-master]');
+          const alt =
+            root.lang === 'en' ? master?.dataset.altEn : master?.dataset.altEs;
+          if (master && alt) master.alt = alt;
+
+          if (carried === null) return;
+          window.scrollTo({ top: carried, behavior: 'auto' });
+          carried = null;
+        });
+      }
+    </script>
+  </body>
+</html>

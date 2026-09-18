@@ -1,0 +1,11 @@
+---
+import Base from '../layouts/Base.astro';
+import Hero from '../components/Hero.astro';
+import { t } from '../i18n/ui';
+
+const locale = 'es' as const;
+---
+
+<Base locale={locale}>
+  <Hero strings={t(locale)} />
+</Base>

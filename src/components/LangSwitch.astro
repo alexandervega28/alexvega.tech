@@ -1,0 +1,43 @@
+---
+import { localizedPath, type Locale, type Strings } from '../i18n/ui';
+
+interface Props {
+  locale: Locale;
+  strings: Strings;
+  path: string;
+}
+
+const { locale, strings, path } = Astro.props;
+
+const options: { code: Locale; label: string; lang: string }[] = [
+  { code: 'es', label: 'ES', lang: 'es' },
+  { code: 'en', label: 'EN', lang: 'en' },
+];
+---
+
+{/* El idioma activo se marca con subrayado y con aria-current, nunca solo
+    por color. El cambio conserva el scroll y no repite la bienvenida: lo
+    gestiona el router de vistas en Base.astro. */}
+<nav class="lang" aria-label={strings.languageLabel}>
+  {
+    options.map((option, index) => (
+      <>
+        {index > 0 && (
+          <span class="lang__sep" aria-hidden="true">
+            /
+          </span>
+        )}
+        <a
+          class="lang__item"
+          href={localizedPath(path, option.code)}
+          hreflang={option.lang}
+          lang={option.lang}
+          data-lang-link
+          aria-current={option.code === locale ? 'true' : undefined}
+        >
+          {option.label}
+        </a>
+      </>
+    ))
+  }
+</nav>

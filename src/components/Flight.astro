@@ -1,0 +1,17 @@
+---
+const en = Astro.url.pathname.startsWith('/en');
+---
+<section class="flight" aria-label={en ? 'Journey through space' : 'Viaje por el espacio'}>
+  <div class="flight__chapter">
+    <p class="flight__eyebrow">01 / {en ? 'LEAVING ORBIT' : 'ABANDONANDO LA ÓRBITA'}</p>
+    <h2>{en ? 'Ideas have' : 'Las ideas no'}<br /><em>{en ? 'no limits.' : 'tienen límites.'}</em></h2>
+    <p>{en ? 'Neither should the things we build.' : 'Lo que construimos tampoco debería tenerlos.'}</p>
+  </div>
+  <div class="flight__chapter flight__chapter--end">
+    <p class="flight__eyebrow">02 / {en ? 'DEEP SPACE' : 'ESPACIO PROFUNDO'}</p>
+    <h2>{en ? 'Beyond' : 'Más allá'}<br /><em>{en ? 'the expected.' : 'de lo esperado.'}</em></h2>
+    <a class="link" href="#contenido">{en ? 'Return to orbit ↑' : 'Volver a la órbita ↑'}</a>
+    <p class="flight__credits"><a href="https://svs.gsfc.nasa.gov/2915/" target="_blank" rel="noopener noreferrer">{en ? 'Earth imagery' : 'Imágenes de la Tierra'}: NASA / GSFC</a></p>
+  </div>
+  <div class="flight__telemetry" aria-hidden="true"><span>AV—01</span><span>{en ? 'FLIGHT' : 'TRAYECTO'} <b data-travel-progress>000</b> / 100</span></div>
+</section>

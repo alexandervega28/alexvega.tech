@@ -1,0 +1,71 @@
+---
+import { links, social } from '../config/site';
+import type { Strings } from '../i18n/ui';
+import NavItem from './NavItem.astro';
+
+interface Props {
+  strings: Strings;
+}
+
+const { strings } = Astro.props;
+---
+
+{/* Orden de lectura en flujo; los retardos siguen la cronología aprobada
+    (revelado entre 650 y 1100 ms, desplazamiento máximo 16 px). */}
+<main class="hero" id="contenido">
+  <div class="hero__content">
+    <p class="hero__role" data-reveal style="--reveal-delay:720ms">
+      {strings.role}
+    </p>
+
+    <h1 class="hero__name" data-reveal style="--reveal-delay:800ms">
+      <span>{strings.name.first}</span>
+      <span>{strings.name.last}</span>
+    </h1>
+
+    <p class="hero__tagline" data-reveal style="--reveal-delay:880ms">
+      {strings.tagline}
+    </p>
+
+    <div class="hero__actions" data-reveal style="--reveal-delay:960ms">
+      <NavItem
+        href={links.projects}
+        label={strings.actionProjects}
+        strings={strings}
+        underlined
+        arrow="external"
+      />
+      <NavItem
+        href={links.contact}
+        label={strings.actionContact}
+        strings={strings}
+        underlined
+      />
+    </div>
+  </div>
+
+  <div class="hero__footer" data-reveal style="--reveal-delay:1040ms">
+    <ul class="hero__social">
+      {
+        social.map((item) => (
+          <li>
+            <NavItem
+              href={item.href}
+              label={item.label}
+              strings={strings}
+              external
+              arrow="external"
+            />
+          </li>
+        ))
+      }
+    </ul>
+
+    {/* Pista de scroll, no un control: todavía no hay segunda sección
+        a la que llevar a nadie. */}
+    <p class="hero__scroll">
+      <span>{strings.scrollHint}</span>
+      <span aria-hidden="true">↓</span>
+    </p>
+  </div>
+</main>

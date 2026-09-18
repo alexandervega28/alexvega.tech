@@ -1,0 +1,175 @@
+---
+import { links } from '../config/site';
+import type { Locale, Strings } from '../i18n/ui';
+import LangSwitch from './LangSwitch.astro';
+import NavItem from './NavItem.astro';
+
+interface Props {
+  locale: Locale;
+  strings: Strings;
+  path: string;
+  home: string;
+}
+
+const { locale, strings, path, home } = Astro.props;
+
+const items = [
+  { href: links.projects, label: strings.navProjects },
+  { href: links.about, label: strings.navAbout },
+  { href: links.contact, label: strings.navContact },
+];
+---
+
+<header class="navbar" data-navbar data-solid="false" data-reveal style="--reveal-delay:650ms">
+  <a class="navbar__brand" href={home}>
+    <span class="navbar__mark">AV</span>
+    <span class="navbar__sep" aria-hidden="true">/</span>
+    <span class="navbar__domain">alexvega.tech</span>
+  </a>
+
+  <div class="navbar__right">
+    <ul class="navbar__links">
+      {
+        items.map((item) => (
+          <li>
+            <NavItem href={item.href} label={item.label} strings={strings} />
+          </li>
+        ))
+      }
+    </ul>
+
+    <LangSwitch locale={locale} strings={strings} path={path} />
+
+    <button
+      class="menu-toggle"
+      type="button"
+      aria-expanded="false"
+      aria-controls="menu-panel"
+      aria-label={strings.menuOpen}
+      data-menu-toggle
+      data-label-open={strings.menuOpen}
+      data-label-close={strings.menuClose}
+    >
+      <svg class="icon-open" width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <path d="M3 7h18M3 17h18" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"></path>
+      </svg>
+      <svg class="icon-close" width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <path d="M5 5l14 14M19 5L5 19" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"></path>
+      </svg>
+    </button>
+  </div>
+</header>
+
+{/* Menú móvil: nombres completos, foco gestionado, cierre con Escape. */}
+<div class="menu-panel" id="menu-panel" data-menu-panel hidden>
+  <ul class="menu-panel__list">
+    {
+      items.map((item) => (
+        <li>
+          <NavItem href={item.href} label={item.label} strings={strings} />
+        </li>
+      ))
+    }
+  </ul>
+</div>
+
+<script>
+  /**
+   * El router de vistas reemplaza el DOM pero no el documento, así que hay dos
+   * tipos de registro: los de documento y ventana se hacen una sola vez y
+   * consultan los elementos vigentes; los del propio botón se rehacen con cada
+   * botón nuevo. Sin esa distinción, astro:page-load (que también se dispara en
+   * la carga inicial) duplicaría el listener y cada clic abriría y cerraría el
+   * menú en el mismo gesto.
+   */
+  const el = {
+    toggle: () => document.querySelector<HTMLButtonElement>('[data-menu-toggle]'),
+    panel: () => document.querySelector<HTMLElement>('[data-menu-panel]'),
+    navbar: () => document.querySelector<HTMLElement>('[data-navbar]'),
+  };
+
+  const isOpen = () => el.toggle()?.getAttribute('aria-expanded') === 'true';
+
+  const focusables = () =>
+    Array.from(
+      el.panel()?.querySelectorAll<HTMLElement>('a[href], button:not([disabled])') ??
+        []
+    );
+
+  /** Fondo oscuro solo cuando la navbar pierde contraste bajo el documento. */
+  const syncSolid = () => {
+    const navbar = el.navbar();
+    if (!navbar) return;
+    navbar.setAttribute(
+      'data-solid',
+      isOpen() || window.scrollY > 24 ? 'true' : 'false'
+    );
+  };
+
+  const setOpen = (open: boolean) => {
+    const toggle = el.toggle();
+    const panel = el.panel();
+    if (!toggle || !panel) return;
+
+    toggle.setAttribute('aria-expanded', String(open));
+    toggle.setAttribute(
+      'aria-label',
+      (open ? toggle.dataset.labelClose : toggle.dataset.labelOpen) ?? ''
+    );
+    panel.hidden = !open;
+    syncSolid();
+    // Puede no haber nada enfocable: los destinos aún no existen.
+    if (open) focusables()[0]?.focus();
+  };
+
+  document.addEventListener('keydown', (event) => {
+    if (!isOpen()) return;
+
+    if (event.key === 'Escape') {
+      setOpen(false);
+      el.toggle()?.focus();
+      return;
+    }
+
+    if (event.key !== 'Tab') return;
+
+    // Ciclo de foco dentro del menú, incluido el propio botón.
+    const toggle = el.toggle();
+    if (!toggle) return;
+    const items = [toggle, ...focusables()];
+    const first = items[0];
+    const last = items[items.length - 1];
+    if (items.length < 2) {
+      event.preventDefault();
+      first.focus();
+      return;
+    }
+    if (event.shiftKey && document.activeElement === first) {
+      event.preventDefault();
+      last.focus();
+    } else if (!event.shiftKey && document.activeElement === last) {
+      event.preventDefault();
+      first.focus();
+    }
+  });
+
+  window.addEventListener('scroll', syncSolid, { passive: true });
+
+  // Al pasar a navegación de escritorio el panel deja de estar disponible.
+  window
+    .matchMedia('(min-width: 900px)')
+    .addEventListener('change', (event) => {
+      if (event.matches && isOpen()) setOpen(false);
+    });
+
+  const bindToggle = () => {
+    const toggle = el.toggle();
+    if (!toggle || toggle.dataset.bound === 'true') return;
+    toggle.dataset.bound = 'true';
+    toggle.addEventListener('click', () => setOpen(!isOpen()));
+    syncSolid();
+  };
+
+  bindToggle();
+  document.addEventListener('astro:page-load', bindToggle);
+</script>

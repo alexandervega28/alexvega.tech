@@ -1,0 +1,13 @@
+---
+import type { Strings } from '../i18n/ui';
+interface Props { strings: Strings }
+---
+<div class="scene scene--ready" data-scene transition:persist="scene" aria-hidden="true">
+  <div class="scene__fallback"></div>
+  <canvas class="scene__canvas" data-universe></canvas>
+  <div class="scene__veil"></div>
+</div>
+<script>
+  import { startUniverse } from '../scripts/universe';
+  startUniverse();
+</script>
