@@ -16,7 +16,7 @@ export const profile = {
   years: '+7',
   yearsLabel: 'años de experiencia en programación',
   tagline: 'Construyendo soluciones escalables.',
-  email: 'alexandervega1993@gmail.com',
+  email: 'hello@alexvega.tech',
   linkedin: 'https://www.linkedin.com/in/avegan',
   cv: '/cv-alexander-vega.pdf',
   photo: '/alex.jpg',
