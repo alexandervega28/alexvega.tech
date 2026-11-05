@@ -1,11 +1,5 @@
 node_modules/
 dist/
-dist-*/
 .astro/
-review/
+.superpowers/
 .env
-.env.*
-!.env.example
-*.log
-.DS_Store
-Thumbs.db

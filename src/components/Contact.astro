@@ -1,0 +1,128 @@
+---
+import { profile } from '../data/site';
+const lines = ['$ whoami', `> ${profile.name} · Full-Stack`, '$ contacto --email', `> ${profile.email}`];
+---
+<section id="contacto" class="section">
+  <div class="wrap">
+    <span class="kicker">Contacto</span>
+    <h2 class="section-title">¿Hablamos?</h2>
+    <p class="hint">→ un clic y listo</p>
+
+    <div class="contact">
+      <div class="term raised">
+        <div class="bar" aria-hidden="true"><i></i><i></i><i></i>&nbsp;alexvega.tech ~ contacto</div>
+        <div class="body" id="typed" data-lines={JSON.stringify(lines)}>
+          {lines.map((l) => <div>{l}</div>)}
+        </div>
+      </div>
+
+      <div class="actions">
+        <a class="btn raised press" href={`mailto:${profile.email}`}>✉ Enviar correo</a>
+        <button class="btn btn--light raised press" type="button" id="copy">⧉ Copiar mi correo</button>
+        <a class="btn btn--light raised press" href={profile.linkedin} target="_blank" rel="noopener">in · LinkedIn</a>
+      </div>
+    </div>
+  </div>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+</section>
+
+<style>
+  .contact { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(24px, 3vw, 40px); }
+  .term { border-radius: 16px; overflow: hidden; background: var(--navy); }
+  .bar {
+    background: var(--sun);
+    padding: 12px 16px;
+    font: 700 14px var(--mono);
+    display: flex;
+    gap: 7px;
+    align-items: center;
+    border-bottom: var(--border) solid var(--ink);
+  }
+  .bar i { width: 13px; height: 13px; border-radius: 50%; background: var(--navy); }
+  .body {
+    color: var(--white);
+    padding: clamp(20px, 3vw, 32px);
+    font: 500 clamp(14px, 1.6vw, 22px)/1.7 var(--mono);
+    min-height: clamp(200px, 22vw, 280px);
+    overflow-wrap: anywhere;
+  }
+  .body :global(.cursor) { display: inline-block; width: 0.55em; height: 1.1em; background: var(--sun); vertical-align: middle; animation: blink 1s steps(1) infinite; }
+  @keyframes blink { 50% { opacity: 0; } }
+  .actions { display: flex; flex-direction: column; gap: 22px; justify-content: center; }
+  .actions .btn { font-size: clamp(18px, 2vw, 22px); padding: clamp(18px, 2vw, 26px); border: var(--border) solid var(--ink); }
+
+  .toast {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    z-index: 60;
+    transform: translate(-50%, 140px);
+    background: var(--sun);
+    font: 900 16px var(--font);
+    padding: 14px 20px;
+    border-radius: 12px;
+    border: 3px solid var(--ink);
+    box-shadow: 5px 5px 0 var(--ink);
+    transition: transform 0.25s;
+    white-space: nowrap;
+  }
+  .toast.show { transform: translate(-50%, 0); }
+
+  @media (max-width: 760px) {
+    .contact { grid-template-columns: 1fr; }
+  }
+</style>
+
+<script>
+  const typed = document.getElementById('typed')!;
+  const lines: string[] = JSON.parse(typed.dataset.lines!);
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  let done = false;
+
+  const type = async () => {
+    typed.textContent = '';
+    for (const l of lines) {
+      const d = document.createElement('div');
+      typed.appendChild(d);
+      for (const ch of l) {
+        d.textContent += ch;
+        await new Promise((r) => setTimeout(r, 28));
+      }
+    }
+    typed.insertAdjacentHTML('beforeend', '<span class="cursor"></span>');
+  };
+
+  if (reduce) {
+    typed.insertAdjacentHTML('beforeend', '<span class="cursor"></span>');
+  } else {
+    new IntersectionObserver(
+      (entries, obs) => {
+        if (entries[0].isIntersecting && !done) {
+          done = true;
+          obs.disconnect();
+          type();
+        }
+      },
+      { threshold: 0.4 },
+    ).observe(typed);
+  }
+
+  const toast = document.getElementById('toast')!;
+  let timer: number | undefined;
+  const show = (msg: string) => {
+    toast.textContent = msg;
+    toast.classList.add('show');
+    clearTimeout(timer);
+    timer = window.setTimeout(() => toast.classList.remove('show'), 1800);
+  };
+
+  document.getElementById('copy')!.addEventListener('click', async () => {
+    const email = lines[lines.length - 1].replace('> ', '');
+    try {
+      await navigator.clipboard.writeText(email);
+      show('¡Correo copiado! ✓');
+    } catch {
+      show(email);
+    }
+  });
+</script>

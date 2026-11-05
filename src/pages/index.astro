@@ -1,11 +1,43 @@
 ---
 import Base from '../layouts/Base.astro';
+import Header from '../components/Header.astro';
 import Hero from '../components/Hero.astro';
-import { t } from '../i18n/ui';
-
-const locale = 'es' as const;
+import Stack from '../components/Stack.astro';
+import Experience from '../components/Experience.astro';
+import Contact from '../components/Contact.astro';
+import { profile } from '../data/site';
 ---
-
-<Base locale={locale}>
-  <Hero strings={t(locale)} />
+<Base>
+  <a class="skip" href="#inicio">Saltar al contenido</a>
+  <Header />
+  <main>
+    <Hero />
+    <Stack />
+    <Experience />
+    <Contact />
+  </main>
+  <footer class="footer">© {new Date().getFullYear()} {profile.name} · alexvega.tech</footer>
 </Base>
+
+<style>
+  .footer {
+    text-align: center;
+    padding: 32px 16px;
+    font: 700 14px var(--mono);
+    border-top: var(--border) solid var(--ink);
+    background: var(--navy);
+    color: var(--white);
+  }
+  .skip {
+    position: absolute;
+    left: 16px;
+    top: -60px;
+    z-index: 100;
+    background: var(--sun);
+    padding: 10px 14px;
+    border: 3px solid var(--ink);
+    border-radius: 10px;
+    font-weight: 700;
+  }
+  .skip:focus { top: 12px; }
+</style>

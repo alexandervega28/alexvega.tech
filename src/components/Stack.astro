@@ -1,0 +1,108 @@
+---
+import { stack } from '../data/site';
+---
+<section id="stack" class="section">
+  <div class="wrap">
+    <span class="kicker">Stack</span>
+    <h2 class="section-title">Con qué construyo</h2>
+    <p class="hint">→ toca una tarjeta</p>
+
+    <ul class="grid">
+      {stack.map((t, i) => (
+        <li>
+          <button class="flip" type="button" aria-pressed="false" aria-label={`${t.name}: ${t.note}`}>
+            <span class="inner">
+              <span class="face front raised">
+                <span class:list={['badge', { tilt: i % 2 === 1 }]} aria-hidden="true">
+                  {t.path ? (
+                    <svg viewBox="0 0 24 24" role="img"><path d={t.path} /></svg>
+                  ) : (
+                    <span class="txt">{t.text}</span>
+                  )}
+                </span>
+                <b>{t.name}</b>
+              </span>
+              <span class="face back raised" aria-hidden="true">{t.note}</span>
+            </span>
+          </button>
+        </li>
+      ))}
+    </ul>
+  </div>
+</section>
+
+<style>
+  .grid {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+    gap: clamp(16px, 2vw, 26px);
+  }
+  .flip {
+    all: unset;
+    display: block;
+    width: 100%;
+    height: 190px;
+    perspective: 900px;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .flip:focus-visible { outline: 3px dashed var(--navy); outline-offset: 6px; border-radius: 18px; }
+  .inner { position: relative; display: block; width: 100%; height: 100%; transition: transform 0.45s; transform-style: preserve-3d; }
+  .flip[aria-pressed='true'] .inner { transform: rotateY(180deg); }
+  .face {
+    position: absolute;
+    inset: 0;
+    border-radius: 18px;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    padding: 18px;
+    text-align: center;
+    transition: transform 0.08s, box-shadow 0.08s;
+  }
+  .flip:hover .front { transform: translate(-2px, -2px); box-shadow: calc(var(--shadow) + 3px) calc(var(--shadow) + 3px) 0 var(--ink); }
+  .front { background: var(--white); }
+  .front b { font-size: clamp(18px, 1.7vw, 22px); font-weight: 900; }
+  .back { background: var(--navy); color: var(--white); transform: rotateY(180deg); font: 700 18px var(--font); }
+
+  .badge {
+    width: 84px;
+    height: 84px;
+    border: 3px solid var(--navy);
+    border-radius: 18px;
+    background: var(--sun);
+    box-shadow: 4px 4px 0 var(--navy);
+    display: grid;
+    place-items: center;
+    transform: rotate(-4deg);
+  }
+  .badge.tilt { transform: rotate(4deg); }
+  .badge svg { width: 46px; height: 46px; fill: var(--navy); }
+  .badge .txt { font: 900 26px var(--font); }
+
+  @media (max-width: 560px) {
+    .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .flip { height: 160px; }
+    .badge { width: 64px; height: 64px; border-radius: 14px; }
+    .badge svg { width: 34px; height: 34px; }
+    .badge .txt { font-size: 20px; }
+    .front b { font-size: 16px; }
+    .back { font-size: 15px; }
+    .face { padding: 12px; gap: 10px; }
+  }
+</style>
+
+<script>
+  document.querySelectorAll<HTMLButtonElement>('.flip').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      btn.setAttribute('aria-pressed', String(btn.getAttribute('aria-pressed') !== 'true'));
+    });
+  });
+</script>

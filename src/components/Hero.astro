@@ -1,71 +1,137 @@
 ---
-import { links, social } from '../config/site';
-import type { Strings } from '../i18n/ui';
-import NavItem from './NavItem.astro';
-
-interface Props {
-  strings: Strings;
-}
-
-const { strings } = Astro.props;
+import { profile } from '../data/site';
 ---
+<section id="inicio" class="hero-section">
+  <div class="wrap hero">
+    <div class="photo raised">
+      <div class="photo-in">
+        <img src={profile.photo} alt={`Foto de ${profile.name}`} width="400" height="400" fetchpriority="high" />
+      </div>
+      <span class="bubble" aria-hidden="true">¡Hola! 👋</span>
+    </div>
 
-{/* Orden de lectura en flujo; los retardos siguen la cronología aprobada
-    (revelado entre 650 y 1100 ms, desplazamiento máximo 16 px). */}
-<main class="hero" id="contenido">
-  <div class="hero__content">
-    <p class="hero__role" data-reveal style="--reveal-delay:720ms">
-      {strings.role}
-    </p>
-
-    <h1 class="hero__name" data-reveal style="--reveal-delay:800ms">
-      <span>{strings.name.first}</span>
-      <span>{strings.name.last}</span>
-    </h1>
-
-    <p class="hero__tagline" data-reveal style="--reveal-delay:880ms">
-      {strings.tagline}
-    </p>
-
-    <div class="hero__actions" data-reveal style="--reveal-delay:960ms">
-      <NavItem
-        href={links.projects}
-        label={strings.actionProjects}
-        strings={strings}
-        underlined
-        arrow="external"
-      />
-      <NavItem
-        href={links.contact}
-        label={strings.actionContact}
-        strings={strings}
-        underlined
-      />
+    <div class="copy">
+      <span class="tag">{profile.years} {profile.yearsLabel}</span>
+      <h1>Hola, soy<br />{profile.name}</h1>
+      <p class="role raised">{profile.role}</p>
+      <p class="sub">{profile.tagline}</p>
+      <div class="ctas">
+        <a class="btn raised press" href="#contacto">✉ Escríbeme</a>
+        <a class="btn btn--light raised press" href={profile.cv} download>↓ Ver mi CV</a>
+      </div>
     </div>
   </div>
+  <a class="cue" href="#stack" aria-label="Ir a Stack">↓ desliza ↓</a>
+</section>
 
-  <div class="hero__footer" data-reveal style="--reveal-delay:1040ms">
-    <ul class="hero__social">
-      {
-        social.map((item) => (
-          <li>
-            <NavItem
-              href={item.href}
-              label={item.label}
-              strings={strings}
-              external
-              arrow="external"
-            />
-          </li>
-        ))
-      }
-    </ul>
+<style>
+  .hero-section {
+    min-height: calc(100svh - var(--header-h));
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding-block: clamp(40px, 6vw, 64px) 24px;
+  }
+  .hero {
+    display: grid;
+    grid-template-columns: minmax(260px, 420px) 1fr;
+    gap: clamp(40px, 6vw, 80px);
+    align-items: center;
+  }
+  .photo {
+    position: relative;
+    width: 100%;
+    max-width: 420px;
+    aspect-ratio: 1;
+    border-radius: 32px;
+    background: var(--white);
+    box-shadow: 12px 12px 0 var(--ink);
+    transform: rotate(-3deg);
+    transition: transform 0.2s ease;
+  }
+  .photo:hover { transform: rotate(1deg) translate(-2px, -2px); }
+  .photo::after {
+    content: '✦';
+    position: absolute;
+    top: -40px;
+    right: -28px;
+    font-size: clamp(40px, 5vw, 56px);
+    color: var(--sun);
+    -webkit-text-stroke: 1.5px var(--ink);
+    pointer-events: none;
+  }
+  .photo-in { position: absolute; inset: 0; border-radius: 28px; overflow: hidden; }
+  .photo-in img { width: 100%; height: 100%; object-fit: cover; filter: saturate(0.85) hue-rotate(-12deg); }
+  .photo-in::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(19, 40, 74, 0), rgba(19, 40, 74, 0.35));
+    mix-blend-mode: multiply;
+  }
+  .bubble {
+    position: absolute;
+    left: 65%;
+    top: -34px;
+    z-index: 2;
+    white-space: nowrap;
+    background: var(--white);
+    font: 700 15px var(--font);
+    padding: 8px 14px;
+    border-radius: 12px;
+    border: 3px solid var(--ink);
+    box-shadow: 4px 4px 0 var(--ink);
+    opacity: 0;
+    transform: translateY(8px) rotate(3deg);
+    transition: 0.2s;
+    pointer-events: none;
+  }
+  .photo:hover .bubble { opacity: 1; transform: translateY(0) rotate(3deg); }
 
-    {/* Pista de scroll, no un control: todavía no hay segunda sección
-        a la que llevar a nadie. */}
-    <p class="hero__scroll">
-      <span>{strings.scrollHint}</span>
-      <span aria-hidden="true">↓</span>
-    </p>
-  </div>
-</main>
+  .tag {
+    display: inline-block;
+    font: 700 clamp(12px, 1.2vw, 15px) var(--mono);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 9px 16px;
+    border-radius: 8px;
+    background: var(--white);
+    border: 3px solid var(--ink);
+    box-shadow: 4px 4px 0 var(--ink);
+    transform: rotate(-2deg);
+  }
+  h1 { font-size: clamp(44px, 7.5vw, 104px); font-weight: 900; line-height: 1; margin: 26px 0 22px; letter-spacing: -0.01em; }
+  .role {
+    display: inline-block;
+    margin: 0;
+    font-weight: 900;
+    font-size: clamp(18px, 2.6vw, 32px);
+    padding: 12px 20px;
+    background: var(--sun);
+    border-radius: 12px;
+  }
+  .sub { font-size: clamp(17px, 1.6vw, 22px); margin: 26px 0 0; color: var(--sub); }
+  .ctas { display: flex; gap: 22px; flex-wrap: wrap; margin-top: clamp(30px, 4vw, 44px); }
+
+  .cue {
+    align-self: center;
+    margin-top: clamp(32px, 5vw, 56px);
+    font: 700 14px var(--mono);
+    text-decoration: none;
+    animation: bob 1.4s ease-in-out infinite;
+  }
+  @keyframes bob { 50% { transform: translateY(6px); } }
+
+  @media (max-width: 900px) {
+    .hero { grid-template-columns: 1fr; justify-items: center; text-align: center; }
+    .photo { max-width: 300px; }
+    .ctas { justify-content: center; }
+  }
+  @media (max-width: 480px) {
+    .photo { max-width: 240px; box-shadow: 8px 8px 0 var(--ink); }
+    .photo::after { top: -30px; right: -18px; }
+    .ctas { flex-direction: column; align-self: stretch; width: 100%; }
+    .ctas .btn { width: 100%; }
+    .copy { width: 100%; }
+  }
+</style>

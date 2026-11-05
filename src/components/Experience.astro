@@ -1,0 +1,141 @@
+---
+import { jobs, profile } from '../data/site';
+---
+<section id="experiencia" class="section">
+  <div class="wrap">
+    <span class="kicker">Experiencia</span>
+    <h2 class="section-title">Mi recorrido</h2>
+    <p class="hint">→ elige una parada</p>
+
+    <div class="timeline" role="tablist" aria-label="Empresas">
+      {jobs.map((j, i) => (
+        <button
+          class="stop raised press"
+          type="button"
+          role="tab"
+          id={`tab-${i}`}
+          aria-controls={`panel-${i}`}
+          aria-selected={i === 0 ? 'true' : 'false'}
+          tabindex={i === 0 ? 0 : -1}
+        >
+          <small>{j.period}</small>
+          <b>{j.company}</b>
+        </button>
+      ))}
+    </div>
+
+    {jobs.map((j, i) => (
+      <article class="detail raised" role="tabpanel" id={`panel-${i}`} aria-labelledby={`tab-${i}`} hidden={i !== 0}>
+        <div>
+          <span class="when">{j.period}</span>
+          <h3>{j.role}</h3>
+          <b class="company">{j.company}</b>
+          <ul>{j.points.map((p) => <li>{p}</li>)}</ul>
+          <div class="chips">{j.tags.map((t) => <span class="chip">{t}</span>)}</div>
+        </div>
+        <div class="big raised" aria-hidden="true">{profile.years}<small>años de experiencia<br />en programación</small></div>
+      </article>
+    ))}
+  </div>
+</section>
+
+<style>
+  .timeline {
+    display: flex;
+    gap: 20px;
+    overflow-x: auto;
+    padding: 6px 14px 22px 4px;
+    margin-inline: -4px;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: thin;
+  }
+  .stop {
+    flex: 0 0 auto;
+    scroll-snap-align: start;
+    padding: 16px 22px;
+    border-radius: 16px;
+    background: var(--white);
+    color: var(--navy);
+    text-align: left;
+    font-family: var(--font);
+  }
+  .stop small { display: block; font: 700 13px var(--mono); opacity: 0.7; margin-bottom: 4px; }
+  .stop b { font-size: clamp(16px, 1.5vw, 19px); }
+  .stop[aria-selected='true'] { background: var(--sun); transform: translate(var(--shadow), var(--shadow)); box-shadow: 0 0 0 var(--ink); }
+
+  .detail {
+    margin-top: clamp(20px, 3vw, 34px);
+    padding: clamp(24px, 4vw, 44px);
+    border-radius: 22px;
+    background: var(--white);
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 40px;
+    align-items: start;
+    animation: pop 0.25s ease;
+  }
+  .detail[hidden] { display: none; }
+  @keyframes pop { from { opacity: 0; transform: translateY(8px); } }
+  .when { font: 700 14px var(--mono); opacity: 0.7; }
+  h3 { margin: 6px 0 6px; font-size: clamp(26px, 3.4vw, 44px); font-weight: 900; line-height: 1.1; }
+  .company { font-size: clamp(17px, 1.6vw, 20px); }
+  ul { margin: 18px 0 0; padding-left: 20px; font-size: clamp(16px, 1.6vw, 19px); line-height: 1.7; }
+  .chips { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 20px; }
+  .chip { font: 700 14px var(--mono); padding: 7px 14px; border-radius: 999px; background: var(--sky); border: 2.5px solid var(--ink); }
+  .big {
+    font: 900 clamp(60px, 8vw, 96px)/1 var(--font);
+    text-align: center;
+    padding: 22px 32px;
+    border-radius: 20px;
+    background: var(--sun);
+    transform: rotate(3deg);
+  }
+  .big small { display: block; font: 700 14px/1.4 var(--mono); margin-top: 8px; }
+
+  @media (max-width: 760px) {
+    /* En móvil: sin scroll horizontal, las paradas se acomodan en una cuadrícula */
+    .timeline {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+      overflow: visible;
+      scroll-snap-type: none;
+      padding: 0 var(--shadow) var(--shadow) 0;
+      margin-inline: 0;
+    }
+    .stop { padding: 12px; min-width: 0; }
+    .stop small { font-size: 11px; }
+    .stop b { display: block; font-size: 14px; line-height: 1.25; }
+    .detail { grid-template-columns: 1fr; gap: 28px; }
+    .big { justify-self: center; }
+  }
+  @media (max-width: 380px) {
+    .timeline { grid-template-columns: 1fr; }
+  }
+</style>
+
+<script>
+  const tabs = [...document.querySelectorAll<HTMLButtonElement>('#experiencia [role="tab"]')];
+  const select = (idx: number, focus = false) => {
+    tabs.forEach((t, i) => {
+      const on = i === idx;
+      t.setAttribute('aria-selected', String(on));
+      t.tabIndex = on ? 0 : -1;
+      document.getElementById(t.getAttribute('aria-controls')!)!.hidden = !on;
+    });
+    if (focus) tabs[idx].focus();
+    // Desplaza solo la línea de tiempo (horizontal), nunca la página.
+    const rail = tabs[idx].parentElement!;
+    const t = tabs[idx];
+    if (t.offsetLeft < rail.scrollLeft || t.offsetLeft + t.offsetWidth > rail.scrollLeft + rail.clientWidth) {
+      rail.scrollTo({ left: t.offsetLeft - 8, behavior: 'smooth' });
+    }
+  };
+  tabs.forEach((t, i) => {
+    t.addEventListener('click', () => select(i));
+    t.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight') select((i + 1) % tabs.length, true);
+      if (e.key === 'ArrowLeft') select((i - 1 + tabs.length) % tabs.length, true);
+    });
+  });
+</script>

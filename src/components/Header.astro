@@ -1,0 +1,136 @@
+---
+import { nav } from '../data/site';
+---
+<header class="header">
+  <nav class="nav wrap" aria-label="Principal">
+    <a class="logo raised" href="#inicio" aria-label="Alexander Vega, inicio">AV.</a>
+    <button class="burger raised press" type="button" aria-expanded="false" aria-controls="menu" aria-label="Abrir menú">
+      <span></span><span></span><span></span>
+    </button>
+    <ul class="menu" id="menu">
+      {nav.map((item, i) => (
+        <li><a href={item.href} class:list={['pill', { active: i === 0 }]}>{item.label}</a></li>
+      ))}
+    </ul>
+  </nav>
+</header>
+
+<style>
+  .header {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background: var(--navy);
+    border-bottom: var(--border) solid var(--ink);
+  }
+  .nav {
+    height: var(--header-h);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    position: relative;
+  }
+  .logo {
+    font: 900 clamp(20px, 2vw, 24px) var(--font);
+    padding: 6px 14px;
+    border-radius: 10px;
+    background: var(--sun);
+    color: var(--navy);
+    text-decoration: none;
+    box-shadow: 4px 4px 0 #060f1f;
+    border-color: #060f1f;
+  }
+  .menu { display: flex; gap: 12px; list-style: none; margin: 0; padding: 0; }
+  .pill {
+    display: block;
+    font: 700 14px var(--mono);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    text-decoration: none;
+    padding: 10px 16px;
+    border-radius: 999px;
+    background: var(--sky);
+    color: var(--navy);
+    border: 3px solid #060f1f;
+    box-shadow: 4px 4px 0 #060f1f;
+    transition: transform 0.08s, box-shadow 0.08s, background 0.15s;
+  }
+  .pill:hover { transform: translate(-2px, -2px); box-shadow: 6px 6px 0 #060f1f; }
+  .pill.active { background: var(--sun); transform: translate(4px, 4px); box-shadow: 0 0 0 #060f1f; }
+
+  .burger {
+    display: none;
+    width: 48px;
+    height: 44px;
+    padding: 0;
+    border-radius: 10px;
+    background: var(--sun);
+    border-color: #060f1f;
+    box-shadow: 4px 4px 0 #060f1f;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 5px;
+  }
+  .burger span { display: block; width: 22px; height: 3px; background: var(--navy); border-radius: 2px; transition: transform 0.2s, opacity 0.2s; }
+  .burger[aria-expanded='true'] span:nth-child(1) { transform: translateY(8px) rotate(45deg); }
+  .burger[aria-expanded='true'] span:nth-child(2) { opacity: 0; }
+  .burger[aria-expanded='true'] span:nth-child(3) { transform: translateY(-8px) rotate(-45deg); }
+
+  @media (max-width: 760px) {
+    .burger { display: flex; }
+    .menu {
+      position: absolute;
+      top: calc(var(--header-h) + 8px);
+      right: var(--gutter);
+      left: var(--gutter);
+      flex-direction: column;
+      gap: 12px;
+      padding: 16px;
+      background: var(--navy);
+      border: var(--border) solid #060f1f;
+      border-radius: 16px;
+      box-shadow: 6px 6px 0 #060f1f;
+      opacity: 0;
+      visibility: hidden;
+      transform: translateY(-8px);
+      transition: opacity 0.15s, transform 0.15s, visibility 0.15s;
+    }
+    .menu.open { opacity: 1; visibility: visible; transform: none; }
+    .pill { text-align: center; padding: 14px 16px; font-size: 15px; }
+  }
+</style>
+
+<script>
+  const burger = document.querySelector<HTMLButtonElement>('.burger')!;
+  const menu = document.getElementById('menu')!;
+  const links = [...document.querySelectorAll<HTMLAnchorElement>('.menu a')];
+
+  const setOpen = (open: boolean) => {
+    menu.classList.toggle('open', open);
+    burger.setAttribute('aria-expanded', String(open));
+    burger.setAttribute('aria-label', open ? 'Cerrar menú' : 'Abrir menú');
+  };
+  burger.addEventListener('click', () => setOpen(!menu.classList.contains('open')));
+  links.forEach((a) => a.addEventListener('click', () => setOpen(false)));
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape') setOpen(false); });
+
+  const sections = links
+    .map((a) => document.querySelector<HTMLElement>(a.getAttribute('href')!))
+    .filter((s): s is HTMLElement => !!s);
+  const observer = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (!entry.isIntersecting) return;
+        links.forEach((a) => {
+          const on = a.getAttribute('href') === `#${entry.target.id}`;
+          a.classList.toggle('active', on);
+          if (on) a.setAttribute('aria-current', 'true'); else a.removeAttribute('aria-current');
+        });
+      });
+    },
+    { rootMargin: '-45% 0px -50% 0px' },
+  );
+  sections.forEach((s) => observer.observe(s));
+</script>
