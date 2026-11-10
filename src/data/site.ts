@@ -44,35 +44,89 @@ export const stack: Tech[] = [
   { name: 'GitHub Actions', path: siGithubactions.path, note: 'CI/CD' },
 ];
 
-export type Job = { period: string; company: string; role: string; points: string[]; tags: string[] };
+export type Step = { period: string; company: string; role: string; points: string[] };
+export type Job = {
+  period: string;
+  company: string;
+  role: string;
+  /** Subtítulo opcional bajo el cargo (p. ej. nombre actual de la empresa). */
+  note?: string;
+  points?: string[];
+  /** Cambios de nombre de la empresa y de cargo dentro de una misma relación laboral, del más reciente al más antiguo. */
+  steps?: Step[];
+  tags: string[];
+};
 
 export const jobs: Job[] = [
   {
-    period: '2024 — hoy',
-    company: 'MindTechSourcing',
-    role: 'Senior Software Developer',
-    points: ['Decisiones técnicas en Mind-e y Quantum Brain', 'Frontend con Angular', 'Funciones con IA (OpenAI, Claude)'],
-    tags: ['Angular', 'OpenAI', 'Claude'],
+    period: 'Jun 2020 — hoy',
+    company: 'Atlantic',
+    role: 'Tech Lead',
+    note: 'Atlantic Quantum Innovations → MindTechSourcing → Byteflow',
+    steps: [
+      {
+        period: 'Sept 2025 — hoy',
+        company: 'Byteflow',
+        role: 'Tech Lead',
+        points: [
+          'Lidero técnicamente Agent, una plataforma comercial de agentes de voz con inteligencia artificial que ya está en manos de clientes.',
+          'Lidero también Vault, una solución que permite consultar la información de una empresa haciendo preguntas en lenguaje natural (RAG).',
+          'Defino la arquitectura y construyo las funcionalidades críticas de productos que funcionan en producción.',
+          'Acompaño al equipo en la resolución de problemas y la revisión de soluciones, para que el software sea de calidad y fácil de mantener.',
+          'Hago que la IA sea viable para el negocio: respuestas rápidas, costos bajo control y un comportamiento confiable cuando el modelo responde algo inesperado.',
+        ],
+      },
+      {
+        period: 'Ene 2025 — Sept 2025',
+        company: 'Byteflow',
+        role: 'Senior Software Engineer',
+        points: [
+          'Construí funcionalidades de punta a punta que conectan servicios y aplican las reglas del negocio dentro de los productos.',
+          'Diseñé APIs y contribuí a la evolución de productos que apoyan la operación diaria de empresas.',
+        ],
+      },
+      {
+        period: 'Dic 2024 — Ene 2025',
+        company: 'MindTechSourcing',
+        role: 'Senior Software Engineer',
+        points: ['Participé en iniciativas de desarrollo y en decisiones técnicas de los productos.'],
+      },
+      {
+        period: 'Jun 2020 — May 2025',
+        company: 'Atlantic Quantum Innovations',
+        role: 'Software Developer',
+        points: [
+          'Construí aplicaciones empresariales de punta a punta, desde la pantalla que ve el usuario hasta la base de datos.',
+          'Diseñé los servicios que permiten que distintas aplicaciones compartan información entre sí.',
+          'Traduje reglas de negocio a software y mejoré el rendimiento, para que las aplicaciones respondan más rápido.',
+          'Organicé y mantuve las bases de datos (SQL Server, PostgreSQL) para que la información estuviera disponible y confiable.',
+        ],
+      },
+    ],
+    tags: ['Agentes de voz', 'RAG', 'OpenAI', 'Claude', 'Angular', 'C# .NET', 'Python', 'SQL Server', 'PostgreSQL'],
   },
   {
-    period: '2020 — 2025',
-    company: 'Atlantic Quantum Innovations',
-    role: 'Desarrollador de Software',
-    points: ['Apps full-stack', 'APIs REST', 'SQL Server y PostgreSQL'],
-    tags: ['Angular', 'C# .NET', 'Python'],
-  },
-  {
-    period: '2019 — 2020',
-    company: 'Cytech',
-    role: 'Ingeniero de TI / Full-Stack',
-    points: ['Intranet de análisis de ventas'],
+    period: 'Mar 2019 — Jun 2020',
+    company: 'Cytech Calidad y Tecnología',
+    role: 'Ingeniero de TI / Desarrollador Full-Stack',
+    points: [
+      'Desarrollé una intranet que centralizó el análisis y los reportes de ventas, facilitando la toma de decisiones.',
+      'Mantuve la infraestructura y los sistemas funcionando para que la operación de la empresa no se detuviera.',
+    ],
     tags: ['PHP', 'CodeIgniter', 'SQL Server'],
   },
   {
-    period: '2016 — 2018',
+    period: 'Nov 2016 — Dic 2018',
     company: 'Fundación Grupo Estudio',
     role: 'Ingeniero de Sistemas',
-    points: ['Sistemas internos'],
-    tags: ['Desarrollo'],
+    points: ['Desarrollé y mantuve los sistemas internos que apoyan los procesos de la organización.'],
+    tags: ['Desarrollo', 'Soporte'],
+  },
+  {
+    period: 'Jun 2012 — Nov 2016',
+    company: 'Neumática del Caribe',
+    role: 'Técnico de Sistemas',
+    points: ['Di soporte técnico y mantenimiento a equipos y sistemas, para que el personal trabajara sin interrupciones.'],
+    tags: ['Soporte técnico'],
   },
 ];

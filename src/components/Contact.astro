@@ -11,14 +11,14 @@ const lines = ['$ whoami', `> ${profile.name} · ${profile.role}`, '$ contacto -
     <div class="contact">
       <div class="term raised">
         <div class="bar" aria-hidden="true"><i></i><i></i><i></i>&nbsp;alexvega.tech ~ contacto</div>
-        <div class="body" id="typed" data-lines={JSON.stringify(lines)}>
+        <div class="body">
           {lines.map((l) => <div>{l}</div>)}
         </div>
       </div>
 
       <div class="actions">
         <a class="btn raised press" href={`mailto:${profile.email}`}>✉ Enviar correo</a>
-        <button class="btn btn--light raised press" type="button" id="copy">⧉ Copiar mi correo</button>
+        <button class="btn btn--light raised press" type="button" id="copy" data-email={profile.email}>⧉ Copiar mi correo</button>
         <a class="btn btn--light raised press" href={profile.linkedin} target="_blank" rel="noopener">in · LinkedIn</a>
       </div>
     </div>
@@ -46,8 +46,6 @@ const lines = ['$ whoami', `> ${profile.name} · ${profile.role}`, '$ contacto -
     min-height: clamp(200px, 22vw, 280px);
     overflow-wrap: anywhere;
   }
-  .body :global(.cursor) { display: inline-block; width: 0.55em; height: 1.1em; background: var(--sun); vertical-align: middle; animation: blink 1s steps(1) infinite; }
-  @keyframes blink { 50% { opacity: 0; } }
   .actions { display: flex; flex-direction: column; gap: 22px; justify-content: center; }
   .actions .btn { font-size: clamp(18px, 2vw, 22px); padding: clamp(18px, 2vw, 26px); border: var(--border) solid var(--ink); }
 
@@ -74,39 +72,7 @@ const lines = ['$ whoami', `> ${profile.name} · ${profile.role}`, '$ contacto -
 </style>
 
 <script>
-  const typed = document.getElementById('typed')!;
-  const lines: string[] = JSON.parse(typed.dataset.lines!);
-  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
-  let done = false;
-
-  const type = async () => {
-    typed.textContent = '';
-    for (const l of lines) {
-      const d = document.createElement('div');
-      typed.appendChild(d);
-      for (const ch of l) {
-        d.textContent += ch;
-        await new Promise((r) => setTimeout(r, 28));
-      }
-    }
-    typed.insertAdjacentHTML('beforeend', '<span class="cursor"></span>');
-  };
-
-  if (reduce) {
-    typed.insertAdjacentHTML('beforeend', '<span class="cursor"></span>');
-  } else {
-    new IntersectionObserver(
-      (entries, obs) => {
-        if (entries[0].isIntersecting && !done) {
-          done = true;
-          obs.disconnect();
-          type();
-        }
-      },
-      { threshold: 0.4 },
-    ).observe(typed);
-  }
-
+  const email = document.getElementById('copy')!.dataset.email!;
   const toast = document.getElementById('toast')!;
   let timer: number | undefined;
   const show = (msg: string) => {
@@ -117,7 +83,6 @@ const lines = ['$ whoami', `> ${profile.name} · ${profile.role}`, '$ contacto -
   };
 
   document.getElementById('copy')!.addEventListener('click', async () => {
-    const email = lines[lines.length - 1].replace('> ', '');
     try {
       await navigator.clipboard.writeText(email);
       show('¡Correo copiado! ✓');

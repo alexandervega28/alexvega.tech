@@ -29,8 +29,19 @@ import { jobs, profile } from '../data/site';
         <div>
           <span class="when">{j.period}</span>
           <h3>{j.role}</h3>
-          <b class="company">{j.company}</b>
-          <ul>{j.points.map((p) => <li>{p}</li>)}</ul>
+          <b class="company">{j.note ?? j.company}</b>
+          {j.points && <ul>{j.points.map((p) => <li>{p}</li>)}</ul>}
+          {j.steps && (
+            <ol class="steps">
+              {j.steps.map((st) => (
+                <li class="step">
+                  <span class="when">{st.period}</span>
+                  <h4>{st.role} <span>· {st.company}</span></h4>
+                  <ul>{st.points.map((p) => <li>{p}</li>)}</ul>
+                </li>
+              ))}
+            </ol>
+          )}
           <div class="chips">{j.tags.map((t) => <span class="chip">{t}</span>)}</div>
         </div>
         <div class="big raised" aria-hidden="true">{profile.years}<small>años de experiencia<br />en programación</small></div>
@@ -80,6 +91,24 @@ import { jobs, profile } from '../data/site';
   h3 { margin: 6px 0 6px; font-size: clamp(26px, 3.4vw, 44px); font-weight: 900; line-height: 1.1; }
   .company { font-size: clamp(17px, 1.6vw, 20px); }
   ul { margin: 18px 0 0; padding-left: 20px; font-size: clamp(16px, 1.6vw, 19px); line-height: 1.7; }
+  .steps { list-style: none; margin: 24px 0 0; padding: 0; }
+  .step { position: relative; padding: 0 0 22px 28px; border-left: 3px solid var(--ink); margin-left: 7px; }
+  .step:last-child { padding-bottom: 0; border-left-color: transparent; }
+  .step::before {
+    content: '';
+    position: absolute;
+    left: -10px;
+    top: 2px;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: var(--white);
+    border: 3px solid var(--ink);
+  }
+  .step:first-child::before { background: var(--sun); }
+  h4 { margin: 4px 0 0; font-size: clamp(19px, 2vw, 24px); font-weight: 900; line-height: 1.2; }
+  h4 span { font-weight: 500; font-size: 0.8em; color: var(--sub); }
+  .step ul { margin-top: 8px; }
   .chips { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 20px; }
   .chip { font: 700 14px var(--mono); padding: 7px 14px; border-radius: 999px; background: var(--sky); border: 2.5px solid var(--ink); }
   .big {
