@@ -12,9 +12,13 @@
     "@fontsource/roboto": "^5.3.0",
     "@fontsource/roboto-mono": "^5.3.0",
     "astro": "^7.4.5",
-    "simple-icons": "^13.21.0"
+    "simple-icons": "^13.21.0",
+    "three": "^0.187.0"
   },
   "engines": {
     "node": ">=22.23.4"
+  },
+  "devDependencies": {
+    "@types/three": "^0.187.0"
   }
 }

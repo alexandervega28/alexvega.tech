@@ -1,0 +1,23 @@
+---
+// Fondo de puntos interactivo (Three.js). Se carga en segundo plano y solo si el navegador
+// soporta WebGL y el usuario no pidió reducir el movimiento. Sin él, la web se ve igual.
+---
+<script>
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const hasWebGL = (() => {
+    try {
+      const c = document.createElement('canvas');
+      return !!(c.getContext('webgl2') || c.getContext('webgl'));
+    } catch {
+      return false;
+    }
+  })();
+
+  if (!reduce && hasWebGL) {
+    const idle = (cb: () => void) =>
+      'requestIdleCallback' in window ? requestIdleCallback(cb, { timeout: 1500 }) : setTimeout(cb, 300);
+
+    // El fondo solo reacciona al mouse: en pantallas táctiles no aporta nada
+    if (matchMedia('(pointer: fine)').matches) idle(() => import('../scripts/dots-bg').then((m) => m.mountDots()));
+  }
+</script>

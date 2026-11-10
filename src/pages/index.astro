@@ -5,6 +5,7 @@ import Hero from '../components/Hero.astro';
 import Stack from '../components/Stack.astro';
 import Experience from '../components/Experience.astro';
 import Contact from '../components/Contact.astro';
+import Fx from '../components/Fx.astro';
 import { profile } from '../data/site';
 ---
 <Base>
@@ -16,6 +17,7 @@ import { profile } from '../data/site';
     <Experience />
     <Contact />
   </main>
+  <Fx />
   <footer class="footer">© {new Date().getFullYear()} {profile.name} · alexvega.tech</footer>
 </Base>
 

@@ -43,6 +43,10 @@ body {
   overflow-x: hidden;
 }
 
+/* Fondo de puntos interactivo (Three.js): cuando está activo reemplaza el patrón CSS */
+.dots-bg { position: fixed; inset: 0; width: 100%; height: 100%; z-index: -1; pointer-events: none; }
+html.dots-3d body { background-image: none; }
+
 img { max-width: 100%; display: block; }
 a { color: inherit; }
 
