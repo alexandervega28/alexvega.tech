@@ -1,25 +1,37 @@
 ---
+import { siInstagram, siLinkedin } from 'simple-icons';
 import { profile } from '../data/site';
-const lines = ['$ whoami', `> ${profile.name} · ${profile.role}`, '$ contacto --email', `> ${profile.email}`];
+import type { Content, Lang } from '../data/site';
+interface Props { t: Content; lang: Lang }
+const { t, lang } = Astro.props;
+const lines = [
+  '$ whoami',
+  `> ${profile.name} · ${t.role}`,
+  t.contact.cmdEmail,
+  `> ${profile.email}`,
+  t.contact.cmdInstagram,
+  `> ${profile.instagramHandle}`,
+];
 ---
 <section id="contacto" class="section">
   <div class="wrap">
-    <span class="kicker">Contacto</span>
-    <h2 class="section-title">¿Hablamos?</h2>
-    <p class="hint">→ un clic y listo</p>
+    <span class="kicker">{t.contact.kicker}</span>
+    <h2 class="section-title">{t.contact.title}</h2>
+    <p class="hint">{t.contact.hint}</p>
 
     <div class="contact">
       <div class="term raised">
-        <div class="bar" aria-hidden="true"><i></i><i></i><i></i>&nbsp;alexvega.tech ~ contacto</div>
+        <div class="bar" aria-hidden="true"><i></i><i></i><i></i>&nbsp;{t.contact.termTitle}</div>
         <div class="body">
           {lines.map((l) => <div>{l}</div>)}
         </div>
       </div>
 
       <div class="actions">
-        <a class="btn raised press" href={`mailto:${profile.email}`}>✉ Enviar correo</a>
-        <button class="btn btn--light raised press" type="button" id="copy" data-email={profile.email}>⧉ Copiar mi correo</button>
-        <a class="btn btn--light raised press" href={profile.linkedin} target="_blank" rel="noopener">in · LinkedIn</a>
+        <a class="btn raised press" href={`mailto:${profile.email}`}>{t.contact.sendEmail}</a>
+        <button class="btn btn--light raised press" type="button" id="copy" data-email={profile.email} data-copied={t.contact.copied}>{t.contact.copyEmail}</button>
+        <a class="btn btn--light raised press" href={profile.linkedin} target="_blank" rel="noopener"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d={siLinkedin.path} /></svg>LinkedIn</a>
+        <a class="btn btn--light raised press" href={profile.instagram} target="_blank" rel="noopener"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d={siInstagram.path} /></svg>Instagram</a>
       </div>
     </div>
   </div>
@@ -47,6 +59,7 @@ const lines = ['$ whoami', `> ${profile.name} · ${profile.role}`, '$ contacto -
     overflow-wrap: anywhere;
   }
   .actions { display: flex; flex-direction: column; gap: 22px; justify-content: center; }
+  .ico { width: 1.15em; height: 1.15em; fill: currentColor; flex: none; }
   .actions .btn { font-size: clamp(18px, 2vw, 22px); padding: clamp(18px, 2vw, 26px); border: var(--border) solid var(--ink); }
 
   .toast {
@@ -72,7 +85,8 @@ const lines = ['$ whoami', `> ${profile.name} · ${profile.role}`, '$ contacto -
 </style>
 
 <script>
-  const email = document.getElementById('copy')!.dataset.email!;
+  const copyBtn = document.getElementById('copy')!;
+  const email = copyBtn.dataset.email!;
   const toast = document.getElementById('toast')!;
   let timer: number | undefined;
   const show = (msg: string) => {
@@ -85,7 +99,7 @@ const lines = ['$ whoami', `> ${profile.name} · ${profile.role}`, '$ contacto -
   document.getElementById('copy')!.addEventListener('click', async () => {
     try {
       await navigator.clipboard.writeText(email);
-      show('¡Correo copiado! ✓');
+      show(copyBtn.dataset.copied!);
     } catch {
       show(email);
     }

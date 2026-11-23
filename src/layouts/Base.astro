@@ -1,26 +1,29 @@
 ---
 import '../styles/global.css';
-import { profile } from '../data/site';
+import { profile, content, langs, defaultLang, type Lang } from '../data/site';
 
-interface Props { title?: string; description?: string }
-const {
-  title = `${profile.name} · ${profile.role}`,
-  description = `${profile.role} con ${profile.years} ${profile.yearsLabel}. ${profile.tagline}`,
-} = Astro.props;
+interface Props { lang?: Lang }
+const { lang = defaultLang } = Astro.props;
+const t = content[lang];
+const title = `${profile.name} · ${t.role}`;
+const description = t.metaDescription;
 const canonical = new URL(Astro.url.pathname, Astro.site);
 const ogImage = new URL(profile.photo, Astro.site);
 ---
 <!doctype html>
-<html lang="es">
+<html lang={lang}>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{title}</title>
     <meta name="description" content={description} />
     <link rel="canonical" href={canonical} />
+    {langs.map((l) => <link rel="alternate" hreflang={l.code} href={new URL(l.path, Astro.site)} />)}
+    <link rel="alternate" hreflang="x-default" href={new URL('/', Astro.site)} />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="theme-color" content="#A8C8EA" />
     <meta property="og:type" content="website" />
+    <meta property="og:locale" content={lang === 'es' ? 'es_CO' : 'en_US'} />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canonical} />

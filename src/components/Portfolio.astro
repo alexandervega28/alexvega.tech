@@ -1,0 +1,74 @@
+---
+import { projects } from '../data/site';
+import type { Content, Lang } from '../data/site';
+interface Props { t: Content; lang: Lang }
+const { t } = Astro.props;
+---
+<section id="portafolio" class="section">
+  <div class="wrap">
+    <span class="kicker">{t.portfolio.kicker}</span>
+    <h2 class="section-title">{t.portfolio.title}</h2>
+    <p class="hint">{t.portfolio.hint}</p>
+
+    <ul class="projects">
+      {projects.map((p, i) => (
+        <li class:list={['project raised', { tilt: i % 2 === 1 }]}>
+          <!-- Marco tipo ventana de navegador, como la terminal de Contacto -->
+          <div class="bar" aria-hidden="true"><i></i><i></i><i></i>&nbsp;{p.domain}</div>
+          <a class="shot" href={p.url} target="_blank" rel="noopener" tabindex="-1" aria-hidden="true">
+            <img src={p.image} alt="" width="1200" height="750" loading="lazy" decoding="async" />
+          </a>
+          <div class="info">
+            <h3>{p.name}</h3>
+            <p>{t.portfolio.items[p.id]}</p>
+            <div class="chips">{p.tags.map((tag) => <span class="chip">{tag}</span>)}</div>
+            <a class="btn raised press" href={p.url} target="_blank" rel="noopener" aria-label={`${t.portfolio.visit} — ${p.name}`}>{t.portfolio.visit}</a>
+          </div>
+        </li>
+      ))}
+    </ul>
+  </div>
+</section>
+
+<style>
+  .projects {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: clamp(26px, 3.4vw, 44px);
+  }
+  .project {
+    display: flex;
+    flex-direction: column;
+    border-radius: 22px;
+    overflow: hidden;
+    background: var(--white);
+  }
+  .bar {
+    background: var(--sun);
+    padding: 12px 16px;
+    font: 700 14px var(--mono);
+    display: flex;
+    gap: 7px;
+    align-items: center;
+    border-bottom: var(--border) solid var(--ink);
+    overflow-wrap: anywhere;
+  }
+  .bar i { flex: none; width: 13px; height: 13px; border-radius: 50%; background: var(--navy); }
+  .shot { display: block; border-bottom: var(--border) solid var(--ink); background: var(--navy); overflow: hidden; }
+  .shot img { width: 100%; height: auto; aspect-ratio: 16 / 10; object-fit: cover; object-position: top; transition: transform 0.3s ease; }
+  .project:hover .shot img { transform: scale(1.03); }
+  .info { display: flex; flex-direction: column; align-items: flex-start; gap: 14px; padding: clamp(20px, 2.6vw, 30px); flex: 1; }
+  h3 { margin: 0; font-size: clamp(24px, 2.8vw, 36px); font-weight: 900; line-height: 1.1; }
+  p { margin: 0; font-size: clamp(16px, 1.5vw, 18px); line-height: 1.6; color: var(--sub); }
+  .chips { display: flex; flex-wrap: wrap; gap: 10px; }
+  .chip { font: 700 14px var(--mono); padding: 7px 14px; border-radius: 999px; background: var(--sky); border: 2.5px solid var(--ink); }
+  .info .btn { margin-top: auto; }
+
+  @media (max-width: 760px) {
+    .projects { grid-template-columns: 1fr; }
+    .info .btn { align-self: stretch; }
+  }
+</style>

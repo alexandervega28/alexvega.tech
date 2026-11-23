@@ -1,28 +1,31 @@
 ---
 import { stack } from '../data/site';
+import type { Content, Lang } from '../data/site';
+interface Props { t: Content; lang: Lang }
+const { t, lang } = Astro.props;
 ---
 <section id="stack" class="section">
   <div class="wrap">
-    <span class="kicker">Stack</span>
-    <h2 class="section-title">Con qué construyo</h2>
-    <p class="hint">→ toca una tarjeta</p>
+    <span class="kicker">{t.stack.kicker}</span>
+    <h2 class="section-title">{t.stack.title}</h2>
+    <p class="hint">{t.stack.hint}</p>
 
     <ul class="grid">
-      {stack.map((t, i) => (
+      {stack.map((tech, i) => (
         <li>
-          <button class="flip" type="button" aria-pressed="false" aria-label={`${t.name}: ${t.note}`}>
+          <button class="flip" type="button" aria-pressed="false" aria-label={`${tech.name}: ${t.stack.notes[tech.id]}`}>
             <span class="inner">
               <span class="face front raised">
                 <span class:list={['badge', { tilt: i % 2 === 1 }]} aria-hidden="true">
-                  {t.path ? (
-                    <svg viewBox="0 0 24 24" role="img"><path d={t.path} /></svg>
+                  {tech.path ? (
+                    <svg viewBox="0 0 24 24" role="img"><path d={tech.path} /></svg>
                   ) : (
-                    <span class="txt">{t.text}</span>
+                    <span class="txt">{tech.text}</span>
                   )}
                 </span>
-                <b>{t.name}</b>
+                <b>{tech.name}</b>
               </span>
-              <span class="face back raised" aria-hidden="true">{t.note}</span>
+              <span class="face back raised" aria-hidden="true">{t.stack.notes[tech.id]}</span>
             </span>
           </button>
         </li>

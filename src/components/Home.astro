@@ -1,0 +1,52 @@
+---
+// Página completa en un idioma. La usan / (español) y /en/ (inglés).
+import Base from '../layouts/Base.astro';
+import Header from './Header.astro';
+import Hero from './Hero.astro';
+import Stack from './Stack.astro';
+import Experience from './Experience.astro';
+import Portfolio from './Portfolio.astro';
+import Contact from './Contact.astro';
+import Fx from './Fx.astro';
+import { profile, content, type Lang } from '../data/site';
+
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+const t = content[lang];
+---
+<Base lang={lang}>
+  <a class="skip" href="#inicio">{t.a11y.skip}</a>
+  <Header t={t} lang={lang} />
+  <main>
+    <Hero t={t} lang={lang} />
+    <Stack t={t} lang={lang} />
+    <Experience t={t} lang={lang} />
+    <Portfolio t={t} lang={lang} />
+    <Contact t={t} lang={lang} />
+  </main>
+  <Fx />
+  <footer class="footer">© {new Date().getFullYear()} {profile.name} · alexvega.tech</footer>
+</Base>
+
+<style>
+  .footer {
+    text-align: center;
+    padding: 32px 16px;
+    font: 700 14px var(--mono);
+    border-top: var(--border) solid var(--ink);
+    background: var(--navy);
+    color: var(--white);
+  }
+  .skip {
+    position: absolute;
+    left: 16px;
+    top: -60px;
+    z-index: 100;
+    background: var(--sun);
+    padding: 10px 14px;
+    border: 3px solid var(--ink);
+    border-radius: 10px;
+    font-weight: 700;
+  }
+  .skip:focus { top: 12px; }
+</style>

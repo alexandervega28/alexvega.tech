@@ -1,13 +1,17 @@
 ---
-import { jobs, profile } from '../data/site';
+import { profile } from '../data/site';
+import type { Content, Lang } from '../data/site';
+interface Props { t: Content; lang: Lang }
+const { t, lang } = Astro.props;
+const jobs = t.jobs;
 ---
 <section id="experiencia" class="section">
   <div class="wrap">
-    <span class="kicker">Experiencia</span>
-    <h2 class="section-title">Mi recorrido</h2>
-    <p class="hint">→ elige una parada</p>
+    <span class="kicker">{t.experience.kicker}</span>
+    <h2 class="section-title">{t.experience.title}</h2>
+    <p class="hint">{t.experience.hint}</p>
 
-    <div class="timeline" role="tablist" aria-label="Empresas">
+    <div class="timeline" role="tablist" aria-label={t.experience.tablist}>
       {jobs.map((j, i) => (
         <button
           class="stop raised press"
@@ -42,9 +46,9 @@ import { jobs, profile } from '../data/site';
               ))}
             </ol>
           )}
-          <div class="chips">{j.tags.map((t) => <span class="chip">{t}</span>)}</div>
+          <div class="chips">{j.tags.map((tag) => <span class="chip">{tag}</span>)}</div>
         </div>
-        <div class="big raised" aria-hidden="true">{profile.years}<small>años de experiencia<br />en programación</small></div>
+        <div class="big raised" aria-hidden="true">{profile.years}<small>{t.yearsLines[0]}<br />{t.yearsLines[1]}</small></div>
       </article>
     ))}
   </div>

@@ -9,39 +9,62 @@ import {
   siClaude,
   siGithubactions,
 } from 'simple-icons';
+import { es } from './es';
+import { en } from './en';
 
+export type Lang = 'es' | 'en';
+export const defaultLang: Lang = 'es';
+export const langs: { code: Lang; label: string; name: string; path: string }[] = [
+  { code: 'es', label: 'ES', name: 'Español', path: '/' },
+  { code: 'en', label: 'EN', name: 'English', path: '/en/' },
+];
+
+/** Datos que no dependen del idioma. */
 export const profile = {
   name: 'Alexander Vega',
-  role: 'Software Developer Full-Stack',
   years: '+7',
-  yearsLabel: 'años de experiencia en programación',
-  tagline: 'Construyendo soluciones escalables.',
   email: 'hello@alexvega.tech',
   linkedin: 'https://www.linkedin.com/in/avegan',
+  instagram: 'https://www.instagram.com/alexvega.tech',
+  instagramHandle: '@alexvega.tech',
   cv: '/cv-alexander-vega.pdf',
   photo: '/alex.jpg',
 };
 
-export const nav = [
-  { href: '#inicio', label: 'Inicio' },
-  { href: '#stack', label: 'Stack' },
-  { href: '#experiencia', label: 'Experiencia' },
-  { href: '#contacto', label: 'Contacto' },
+/** Tecnologías del stack. La nota de cada una está en los textos por idioma (stackNotes). */
+export type Tech = { id: string; name: string; path?: string; text?: string };
+export const stack: Tech[] = [
+  { id: 'angular', name: 'Angular', path: siAngular.path },
+  { id: 'typescript', name: 'TypeScript', path: siTypescript.path },
+  { id: 'tailwind', name: 'Tailwind', path: siTailwindcss.path },
+  { id: 'dotnet', name: 'C# .NET', path: siDotnet.path },
+  { id: 'python', name: 'Python · FastAPI', path: siPython.path },
+  { id: 'sqlserver', name: 'SQL Server', text: 'SQL' },
+  { id: 'postgresql', name: 'PostgreSQL', path: siPostgresql.path },
+  { id: 'openai', name: 'OpenAI', path: siOpenai.path },
+  { id: 'claude', name: 'Claude', path: siClaude.path },
+  { id: 'actions', name: 'GitHub Actions', path: siGithubactions.path },
 ];
 
-export type Tech = { name: string; note: string; path?: string; text?: string };
-
-export const stack: Tech[] = [
-  { name: 'Angular', path: siAngular.path, note: 'Mi frontend principal' },
-  { name: 'TypeScript', path: siTypescript.path, note: 'Todos los días' },
-  { name: 'Tailwind', path: siTailwindcss.path, note: 'UI rápida y limpia' },
-  { name: 'C# .NET', path: siDotnet.path, note: 'APIs REST y lógica de negocio' },
-  { name: 'Python · FastAPI', path: siPython.path, note: 'Servicios rápidos e IA' },
-  { name: 'SQL Server', text: 'SQL', note: 'Bases relacionales' },
-  { name: 'PostgreSQL', path: siPostgresql.path, note: 'Bases relacionales' },
-  { name: 'OpenAI', path: siOpenai.path, note: 'IA en productos reales' },
-  { name: 'Claude', path: siClaude.path, note: 'IA en productos reales' },
-  { name: 'GitHub Actions', path: siGithubactions.path, note: 'CI/CD' },
+/** Proyectos del portafolio. El resumen de cada uno está en los textos por idioma (portfolio.items). */
+export type Project = { id: string; name: string; url: string; domain: string; image: string; tags: string[] };
+export const projects: Project[] = [
+  {
+    id: 'printing',
+    name: 'Printing Company',
+    url: 'https://printingcompany.store/',
+    domain: 'printingcompany.store',
+    image: '/portfolio/printing-company.webp',
+    tags: ['Shopify', 'E-commerce'],
+  },
+  {
+    id: 'aloquilla',
+    name: 'Aloquilla Radio',
+    url: 'https://www.aloquillaradio.com/',
+    domain: 'aloquillaradio.com',
+    image: '/portfolio/aloquilla-radio.webp',
+    tags: ['JavaScript', 'Streaming'],
+  },
 ];
 
 export type Step = { period: string; company: string; role: string; points: string[] };
@@ -57,76 +80,31 @@ export type Job = {
   tags: string[];
 };
 
-export const jobs: Job[] = [
-  {
-    period: 'Jun 2020 — hoy',
-    company: 'Atlantic',
-    role: 'Tech Lead',
-    note: 'Atlantic Quantum Innovations → MindTechSourcing → Byteflow',
-    steps: [
-      {
-        period: 'Sept 2025 — hoy',
-        company: 'Byteflow',
-        role: 'Tech Lead',
-        points: [
-          'Lidero técnicamente Agent, una plataforma comercial de agentes de voz con inteligencia artificial que ya está en manos de clientes.',
-          'Lidero también Vault, una solución que permite consultar la información de una empresa haciendo preguntas en lenguaje natural (RAG).',
-          'Defino la arquitectura y construyo las funcionalidades críticas de productos que funcionan en producción.',
-          'Acompaño al equipo en la resolución de problemas y la revisión de soluciones, para que el software sea de calidad y fácil de mantener.',
-          'Hago que la IA sea viable para el negocio: respuestas rápidas, costos bajo control y un comportamiento confiable cuando el modelo responde algo inesperado.',
-        ],
-      },
-      {
-        period: 'Ene 2025 — Sept 2025',
-        company: 'Byteflow',
-        role: 'Senior Software Engineer',
-        points: [
-          'Construí funcionalidades de punta a punta que conectan servicios y aplican las reglas del negocio dentro de los productos.',
-          'Diseñé APIs y contribuí a la evolución de productos que apoyan la operación diaria de empresas.',
-        ],
-      },
-      {
-        period: 'Dic 2024 — Ene 2025',
-        company: 'MindTechSourcing',
-        role: 'Senior Software Engineer',
-        points: ['Participé en iniciativas de desarrollo y en decisiones técnicas de los productos.'],
-      },
-      {
-        period: 'Jun 2020 — May 2025',
-        company: 'Atlantic Quantum Innovations',
-        role: 'Software Developer',
-        points: [
-          'Construí aplicaciones empresariales de punta a punta, desde la pantalla que ve el usuario hasta la base de datos.',
-          'Diseñé los servicios que permiten que distintas aplicaciones compartan información entre sí.',
-          'Traduje reglas de negocio a software y mejoré el rendimiento, para que las aplicaciones respondan más rápido.',
-          'Organicé y mantuve las bases de datos (SQL Server, PostgreSQL) para que la información estuviera disponible y confiable.',
-        ],
-      },
-    ],
-    tags: ['Agentes de voz', 'RAG', 'OpenAI', 'Claude', 'Angular', 'C# .NET', 'Python', 'SQL Server', 'PostgreSQL'],
-  },
-  {
-    period: 'Mar 2019 — Jun 2020',
-    company: 'Cytech Calidad y Tecnología',
-    role: 'Ingeniero de TI / Desarrollador Full-Stack',
-    points: [
-      'Desarrollé una intranet que centralizó el análisis y los reportes de ventas, facilitando la toma de decisiones.',
-      'Mantuve la infraestructura y los sistemas funcionando para que la operación de la empresa no se detuviera.',
-    ],
-    tags: ['PHP', 'CodeIgniter', 'SQL Server'],
-  },
-  {
-    period: 'Nov 2016 — Dic 2018',
-    company: 'Fundación Grupo Estudio',
-    role: 'Ingeniero de Sistemas',
-    points: ['Desarrollé y mantuve los sistemas internos que apoyan los procesos de la organización.'],
-    tags: ['Desarrollo', 'Soporte'],
-  },
-  {
-    period: 'Jun 2012 — Nov 2016',
-    company: 'Neumática del Caribe',
-    role: 'Técnico de Sistemas',
-    points: ['Di soporte técnico y mantenimiento a equipos y sistemas, para que el personal trabajara sin interrupciones.'],
-    tags: ['Soporte técnico'],
-  },
-];
+/** Todos los textos de la web en un idioma. `es.ts` y `en.ts` deben tener la misma forma. */
+export type Content = {
+  role: string;
+  tagline: string;
+  /** Texto bajo el "+7" de la tarjeta de experiencia, en dos líneas. */
+  yearsLines: [string, string];
+  metaDescription: string;
+  nav: { href: string; label: string }[];
+  a11y: { skip: string; mainNav: string; logo: string; openMenu: string; closeMenu: string; language: string };
+  hero: { greeting: string; bubble: string; photoAlt: string; write: string; cv: string; cue: string; cueLabel: string };
+  stack: { kicker: string; title: string; hint: string; notes: Record<string, string> };
+  experience: { kicker: string; title: string; hint: string; tablist: string };
+  portfolio: { kicker: string; title: string; hint: string; visit: string; imageAlt: string; items: Record<string, string> };
+  contact: {
+    kicker: string;
+    title: string;
+    hint: string;
+    termTitle: string;
+    cmdEmail: string;
+    cmdInstagram: string;
+    sendEmail: string;
+    copyEmail: string;
+    copied: string;
+  };
+  jobs: Job[];
+};
+
+export const content: Record<Lang, Content> = { es, en };

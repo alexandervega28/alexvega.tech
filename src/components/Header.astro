@@ -1,17 +1,43 @@
 ---
-import { nav } from '../data/site';
+import { langs } from '../data/site';
+import type { Content, Lang } from '../data/site';
+interface Props { t: Content; lang: Lang }
+const { t, lang } = Astro.props;
 ---
 <header class="header">
-  <nav class="nav wrap" aria-label="Principal">
-    <a class="logo raised" href="#inicio" aria-label="Alexander Vega, inicio">AV.</a>
-    <button class="burger raised press" type="button" aria-expanded="false" aria-controls="menu" aria-label="Abrir menú">
-      <span></span><span></span><span></span>
-    </button>
-    <ul class="menu" id="menu">
-      {nav.map((item, i) => (
-        <li><a href={item.href} class:list={['pill', { active: i === 0 }]}>{item.label}</a></li>
-      ))}
-    </ul>
+  <nav class="nav wrap" aria-label={t.a11y.mainNav}>
+    <a class="logo raised" href="#inicio" aria-label={t.a11y.logo}>AV.</a>
+    <div class="right">
+      <ul class="menu" id="menu">
+        {t.nav.map((item, i) => (
+          <li><a href={item.href} class:list={['pill', { active: i === 0 }]}>{item.label}</a></li>
+        ))}
+      </ul>
+      <!-- Selector de idioma: enlaces reales a / y /en/ -->
+      <div class="lang" role="group" aria-label={t.a11y.language}>
+        {langs.map((l) => (
+          <a
+            href={l.path}
+            hreflang={l.code}
+            lang={l.code}
+            class:list={['lang-opt', { on: l.code === lang }]}
+            aria-current={l.code === lang ? 'true' : undefined}
+            aria-label={l.name}
+          >{l.label}</a>
+        ))}
+      </div>
+      <button
+        class="burger raised press"
+        type="button"
+        aria-expanded="false"
+        aria-controls="menu"
+        aria-label={t.a11y.openMenu}
+        data-open={t.a11y.openMenu}
+        data-close={t.a11y.closeMenu}
+      >
+        <span></span><span></span><span></span>
+      </button>
+    </div>
   </nav>
 </header>
 
@@ -41,7 +67,30 @@ import { nav } from '../data/site';
     box-shadow: 4px 4px 0 #060f1f;
     border-color: #060f1f;
   }
+  .right { display: flex; align-items: center; gap: 14px; }
   .menu { display: flex; gap: 12px; list-style: none; margin: 0; padding: 0; }
+
+  /* Selector de idioma: dos mitades de una misma pastilla */
+  .lang {
+    display: flex;
+    border: 3px solid #060f1f;
+    border-radius: 999px;
+    box-shadow: 4px 4px 0 #060f1f;
+    overflow: hidden;
+    background: var(--sky);
+  }
+  .lang-opt {
+    font: 700 14px var(--mono);
+    letter-spacing: 0.06em;
+    text-decoration: none;
+    padding: 10px 12px;
+    color: var(--navy);
+    transition: background 0.15s;
+  }
+  .lang-opt + .lang-opt { border-left: 3px solid #060f1f; }
+  .lang-opt:hover { background: var(--white); }
+  .lang-opt.on { background: var(--sun); }
+  .lang-opt:focus-visible { outline: 3px dashed var(--sun); outline-offset: -6px; }
   .pill {
     display: block;
     font: 700 14px var(--mono);
@@ -78,6 +127,12 @@ import { nav } from '../data/site';
   .burger[aria-expanded='true'] span:nth-child(2) { opacity: 0; }
   .burger[aria-expanded='true'] span:nth-child(3) { transform: translateY(-8px) rotate(-45deg); }
 
+  @media (max-width: 1080px) {
+    .right { gap: 10px; }
+    .menu { gap: 8px; }
+    .pill { padding: 9px 11px; font-size: 13px; letter-spacing: 0.03em; }
+    .lang-opt { padding: 9px 10px; font-size: 13px; }
+  }
   @media (max-width: 760px) {
     .burger { display: flex; }
     .menu {
@@ -110,11 +165,18 @@ import { nav } from '../data/site';
   const setOpen = (open: boolean) => {
     menu.classList.toggle('open', open);
     burger.setAttribute('aria-expanded', String(open));
-    burger.setAttribute('aria-label', open ? 'Cerrar menú' : 'Abrir menú');
+    burger.setAttribute('aria-label', open ? burger.dataset.close! : burger.dataset.open!);
   };
   burger.addEventListener('click', () => setOpen(!menu.classList.contains('open')));
   links.forEach((a) => a.addEventListener('click', () => setOpen(false)));
   document.addEventListener('keydown', (e) => { if (e.key === 'Escape') setOpen(false); });
+
+  // Al cambiar de idioma se conserva la sección en la que estaba el usuario
+  document.querySelectorAll<HTMLAnchorElement>('.lang-opt').forEach((a) => {
+    a.addEventListener('click', () => {
+      if (location.hash) a.href = a.pathname + location.hash;
+    });
+  });
 
   const sections = links
     .map((a) => document.querySelector<HTMLElement>(a.getAttribute('href')!))
